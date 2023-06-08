@@ -20,10 +20,6 @@ async function uploadVideo(req, res) {
     const videoID=uuidv4();
     console.log('생성된 video id',videoID);
 
-    //test code
-    //const videoFilePath = '/Users/parkchaewon/Downloads/yolodataset_3.mp4';
-    //const videoHash = await generateHash(videoFilePath);
-
     // 블록체인에 동영상 해시값 저장
     //아이디,해시 저장
     const transactionID=await blockchainService.storeVideoHash(videoID);
@@ -53,17 +49,25 @@ async function uploadVideo(req, res) {
 async function playVideo(req, res) {
   try {
     // 클라이언트로부터 동영상 파일 받기
-    const videoFile = req.file;
-
-    // 동영상 파일로부터 해시값 생성
-    const videoHash = gene  rateHash(videoFile.path);
+    const videoID = req.vid;
 
     // 블록체인에서 해당 동영상의 해시값 조회
-    const blockchainHash = await blockchainService.getVideoHash(videoFile.originalname);
+    const blockchainHash = await blockchainService.getVideoHash(videoID);
+    const originVideo=await cloudService.getVideo(videoID);
+
+    //클라우드로부터 받아온 영상의 해시값
+    const originVideoHash=generateHash(originVideo);
 
     // 해시값 비교하여 무결성 검증
-    const isValid = videoHash === blockchainHash;
+    const isValid = originVideoHash === blockchainHash;
 
+    //무결성 확인 되면 재생 안 되면 에러
+    if(isValid){
+      //client에게 video file 전송
+
+    }else{
+      console.log("무결성 검증에 실패했습니다");
+    }
     // 응답 데이터 생성
     const response = {
       videoHash,

@@ -22,11 +22,11 @@ const contractAddress = '0xcc27037943C6BD197b872493C6D39c4D8706F97c';
 const contract = new web3.eth.Contract(contractAbi, contractAddress);
 
 // 동영상 해시값을 블록체인에 저장하는 함수
-async function storeVideoHash(videoHash) {
+async function storeVideoHash(videoID,videoHash) {
   const accounts = await web3.eth.getAccounts();
   const sender = accounts[0];
 
-  const result = await contract.methods.uploadVideo(videoHash, 'seoul_milk_coffee').send({ from: sender });
+  const result = await contract.methods.uploadVideo(videoHash, videoID).send({ from: sender });
   console.log('Transaction hash:', result.transactionHash);
 }
 
@@ -36,37 +36,6 @@ async function getVideoHash(videoId) {
   return result.hash;
 }
 
-//const generateHash = require('/Users/parkchaewon/backend/src/utils/generateHash');
-const generateHash = require('src/utils/generateHash.js');
-// 테스트 함수
-async function testBlockchainService() {
-  try {
-    // 동영상 해시값을 블록체인에 저장하는 테스트
-    //const videoHash = await generateHash(videoFile.path);
-
-
-    //이때 이 비디오 경로를 클라우드에서 받아와야함 -> how? db에 있는 url로 조회
-    const videoFilePath = '/Users/parkchaewon/Downloads/yolodataset_3.mp4';
-    //const videoFilePath = '/Users/parkchaewon/Downloads/yolodataset_3.mp4';
-    const videoHash = await generateHash(videoFilePath);
-
-    console.log('Storing video hash in blockchain...');
-    await storeVideoHash(videoHash);
-    console.log('Video hash stored in blockchain successfully.');
-
-    // 동영상의 해시값을 블록체인에서 조회하는 테스트
-    //const videoId = 비디오의 아이디 받아오기;
-    const videoId = 2; // 조회할 동영상의 ID
-    console.log('Getting video hash from blockchain...');
-    const storedHash = await getVideoHash(videoId);
-    console.log('Retrieved video hash from blockchain:', storedHash);
-  } catch (error) {
-    console.error('Error:', error);
-  }
-}
-
-// 테스트 실행
-testBlockchainService();
 module.exports = {
   storeVideoHash,
   getVideoHash
