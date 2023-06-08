@@ -26,7 +26,7 @@ async function uploadVideo(req, res) {
     const transactionHash = await blockchainService.storeVideoHash(videoHash);
 
     // 클라우드에 동영상 파일 업로드
-    await cloudService.uploadVideo(videoFile);
+    await cloudService.uploadVideo(videoID,videoFile);
 
     // 응답 데이터 생성
     const response = {
@@ -47,6 +47,29 @@ async function uploadVideo(req, res) {
 
 // 동영상 재생 요청 API 핸들러
 async function playVideo(req, res) {
+  try {
+    // 클라이언트로부터 동영상 파일 받기
+    const videoID = req.vid;
+
+    const originVideo=await cloudService.getVideo(videoID);
+
+
+    // 응답 데이터 생성 - 원본 영상 url
+    const response = {
+      originVideo
+    };
+
+    // 클라이언트에 응답 전송
+    res.status(200).json(response);
+  } catch (error) {
+    console.error('동영상 재생 요청 실패:', error);
+    res.status(500).json({ message: '동영상 재생 요청에 실패했습니다.' });
+  }
+
+}
+
+// 동영상 재생 요청 API 핸들러
+async function downloadVideo(req, res) {
   try {
     // 클라이언트로부터 동영상 파일 받기
     const videoID = req.vid;

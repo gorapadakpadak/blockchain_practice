@@ -4,10 +4,14 @@
 
 //cloud연동 코드
 //DB연동 코드
-const cloudS3=require();
-const db=require();
+const AWS = require('aws-sdk');
+const db=require('src/services/databaseService.js');
 
-async function uploadVideo(videofile){
+async function uploadVideo(videoID,videofile){
+    const generateURL=await ;//cloud에 videofile 업로드 후 url 받기
+    
+    //db에 videoid와 url 업로드
+
 
 }
 
