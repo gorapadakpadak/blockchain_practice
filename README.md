@@ -1,2 +1,3 @@
 # blockchain_practice
-my first blockchain_app
+lottery(x)-> video...
+
