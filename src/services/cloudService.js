@@ -4,20 +4,65 @@
 
 //cloud연동 코드
 //DB연동 코드
-const AWS = require('aws-sdk');
 const db=require('src/services/databaseService.js');
 
-async function uploadVideo(videoID,videofile){
-    const generateURL=await ;//cloud에 videofile 업로드 후 url 받기
-    
-    //db에 videoid와 url 업로드
+// AWS SDK 로드
+const AWS = require('aws-sdk');
 
+// AWS 계정의 인증 정보 설정
+AWS.config.update({
+  accessKeyId: 'YOUR_ACCESS_KEY',
+  secretAccessKey: 'YOUR_SECRET_KEY',
+});
 
+// S3 인스턴스 생성
+const s3 = new AWS.S3();
+
+// 영상 업로드 함수
+function uploadVideo(bucketName, fileName, fileData) {
+  const params = {
+    Bucket: bucketName,
+    Key: fileName,
+    Body: fileData,
+  };
+
+  return new Promise((resolve, reject) => {
+    s3.upload(params, (err, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data.Location); // 업로드된 파일의 URL 반환
+      }
+    });
+  });
 }
 
-async function getVideo(videoID){
-    const getURL=await ; //db에서 videoID로 검색해서 나온 url 반환
-    const result=await ;//cloud에서 url조회해서 파일 받아오기
+// 영상 재생 함수
+function playVideo(bucketName, fileName) {
+  const params = {
+    Bucket: bucketName,
+    Key: fileName,
+  };
 
-    return result.file;
+  return s3.getSignedUrlPromise('getObject', params);
 }
+
+
+function downloadFile(bucketName, fileName) {
+    const params = {
+      Bucket: bucketName,
+      Key: fileName,
+    };
+    return new Promise((resolve, reject) => {
+        s3.getObject(params, (err, data) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(data.Body); // 다운로드된 영상 데이터 반환
+          }
+        });
+      });
+}
+
+
+
