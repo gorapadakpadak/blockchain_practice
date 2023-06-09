@@ -9,6 +9,34 @@ const cloudService = require('../services/cloudService');
 const {v4:uuidv4}=require('uuid');
 const bucketName = 'YOUR_BUCKET_NAME';
 
+
+//영상 파일의 메타데이터를 추출 (미완)
+const exiftool = require('exiftool-vendored').exiftool;
+
+async function extractMetadata(videoFilePath) {
+  try {
+    const metadata = await exiftool.read(videoFilePath);
+    // 메타데이터에서 위치정보와 시간정보 추출
+    const latitude = metadata.GPSLatitude;
+    const longitude = metadata.GPSLongitude;
+    const timestamp = metadata.DateTimeOriginal;
+    
+    console.log('Latitude:', latitude);
+    console.log('Longitude:', longitude);
+    console.log('Timestamp:', timestamp);
+  } catch (error) {
+    console.error('Failed to extract metadata:', error);
+  }
+}
+
+// 사용 예시
+const videoFilePath = '/path/to/video.mp4';
+extractMetadata(videoFilePath);
+
+//->이 정보를 DB에 저장하고 이거 기반으로 조회하게 할 수도 있겠다
+
+
+
 // 동영상 업로드 API 핸들러
 async function uploadVideo(req, res) {
   try {
@@ -67,17 +95,20 @@ async function playVideo(req, res) {
     const response = {
       originVideo
     };
-    // 예시: 영상 재생 API 엔드포인트
-  app.get('/video/:id', (req, res) => {
-    const { id } = req.params;
-
-    try {
-    // 영상 재생 로직 작성
-    // ...
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to play video.' });
-    }
-  });
+    app.get('/video/:id', async (req, res) => {
+      const { id } = req.params;
+    
+      try {
+        // 해당 id를 기반으로 영상 파일을 가져온다.
+        const videoPath = await getVideoPath(id);
+    
+        // 영상 파일을 스트리밍 방식으로 클라이언트로 전송한다.
+        res.sendFile(videoPath);
+      } catch (error) {
+        res.status(500).json({ error: 'Failed to play video.' });
+      }
+    });
+    
 
     // 클라이언트에 응답 전송
     res.status(200).json(response);
@@ -97,42 +128,21 @@ async function downloadVideo(req, res) {
     // 블록체인에서 해당 동영상의 해시값 조회
     const blockchainHash = await blockchainService.getVideoHash(videoID);
     const originVideo=await cloudService.downloadVideo(bucketName,videoID);
-
     //클라우드로부터 받아온 영상의 해시값
     const originVideoHash=generateHash(originVideo);
 
     // 해시값 비교하여 무결성 검증
     const isValid = originVideoHash === blockchainHash;
 
-    //무결성 확인 되면 전송 안 되면 에러
-    if(isValid){
-      //client에게 video file 전송
-      // 응답 데이터 생성
-    const response = {
-      originVideo,
-      isValid,
-    };
-    // 예시: 영상 URL 저장 API 엔드포인트
-  app.post('/video', async (req, res) => {
-    const { videoURL } = req.body;
-  
-    try {
-      await saveVideoURL(videoURL);
-      res.status(200).json({ message: 'Video URL saved successfully.' });
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to save video URL.' });
+    // 무결성 확인되면 동영상 파일 반환, 그렇지 않으면 에러 메시지 발생
+    if (isValid) {
+      send2client.sendVideo(originVideo);
+    } else {
+      throw new Error('무결성 검증에 실패했습니다.');
     }
-  });
-
-
-    }else{
-      console.log("무결성 검증에 실패했습니다");
-    }
-    // 클라이언트에 응답 전송
-    res.status(200).json(response);
   } catch (error) {
-    console.error('동영상 재생 요청 실패:', error);
-    res.status(500).json({ message: '동영상 재생 요청에 실패했습니다.' });
+    console.error('동영상 다운로드 요청 실패:', error);
+    send2client.sendError(res, '동영상 다운로드 요청에 실패했습니다.');
   }
 }
 

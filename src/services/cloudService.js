@@ -49,20 +49,27 @@ function playVideo(bucketName, fileName) {
 
 
 function downloadFile(bucketName, fileName) {
-    const params = {
+  return new Promise((resolve, reject) => {
+    const s3 = new AWS.S3({
+      accessKeyId: 'YOUR_ACCESS_KEY',
+      secretAccessKey: 'YOUR_SECRET_ACCESS_KEY',
+    });
+
+    const s3GetObjectParams = {
       Bucket: bucketName,
       Key: fileName,
     };
-    return new Promise((resolve, reject) => {
-        s3.getObject(params, (err, data) => {
-          if (err) {
-            reject(err);
-          } else {
-            resolve(data.Body); // 다운로드된 영상 데이터 반환
-          }
-        });
-      });
+    s3.getObject(s3GetObjectParams, (error, data) => {
+      if (error) {
+        console.error(error);
+        reject(new Error('Failed to download file from S3'));
+      } else {
+        resolve(data.Body);
+      }
+    });
+  });
 }
 
+module.exports = { downloadFile };
 
 
