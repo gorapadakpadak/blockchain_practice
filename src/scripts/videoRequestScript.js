@@ -10,27 +10,19 @@
 //4. 요청버튼을 누르면 보상금이 지급되고 해당 영상정보들은 accident테이블에 추가됨
 //-> 이제부터 당사자에게 v_url 제공 시작 (acc테이블 접근 가능하니까 url도 뜨는거지)
 
-const cloudService = require('..');
+const videoController = require('src/controllers/videoController.js');
 const db = require('src/services/databaseService.js');
-const cloudService = require('src/services/cloudService.js');
+const cloude=require('src/services/cloudService.js')
+
 
 
 
 // 1.  위치 정보 기준으로 helper 테이블 조회하여 주변 차량 v_id, v_url 제공 (마커 찍을때 필요)
 function requestVideosBasedOnLocation(location) {
-  const witnesses = Witness.findAll({ where: { location: location }});
+  const witnesses = db.getHelperDatae(location);
 
-  const formattedWitnesses = witnesses.map(witness => {
-    return {
-      videoId: witness.v_id,
-      witnessID: witness.u_id,
-      witnessvideoURL: witness.v_url
-    };
-  });
-
-  res.json(formattedWitnesses);
+  res.json(witness);
 }
-
 
 // -> 안드로이드에서 선별해서 요청보낼 u_id,v_id줌
 // -> 그럼 node.js에서 받아서 u_id,v_id로 helper table조회해서 목격자의 정보를 조회 -> 푸쉬알림
@@ -38,37 +30,43 @@ function requestVideosBasedOnLocation(location) {
 // 2. 요청하기 버튼 누르면 영상 업로드 및 사고 정보 저장
 function handleAccidentReport(accidentData, videoData) {
   // 영상을 클라우드에 업로드
-  const videoURL = cloudService.uploadVideo(videoData);
+  const videoURL = videoController.uploadVideo(videoData);
 
-  // 사고 정보를 데이터베이스에 저장
-  db.saveAccidentData(accidentData);
+  if(videoURL){
+       // 사고 정보를 데이터베이스에 저장
+      db.saveAccidentData(accidentData);
+  } else {
+    res.json("동영상 업로드에 실패했습니다.")
+  }
 
 }
-
 
 
 // 3. u_id,v_id로 helper table조회해서 목격자의 정보를 조회 & 푸쉬알림
 function alarm2Witness(alarmList){
+//목격자 정보 조회해서 알림 넣기 -> 알람리스트에서 하나씩 뽑아서 조회 -> 토큰 정보 토대로 알림
 
-  // 푸시 알림 보내기 예시
+
+// 푸시 알림 보내기 예시
 const deviceToken = 'DEVICE_TOKEN'; // 안드로이드 디바이스 토큰
 const message = '업로드하신 영상 제공 요청이 들어왔습니다';
 
-sendPushNotification(deviceToken, message);
+
+
 
 }
 
 
 
-// 4. 요청 수락 버튼을 누르면 보상금 지급 및 영상 정보를 accident 테이블에 추가
-function processRequestButton(accidentData, helperData) {
-  //가나슈 지갑 연결 - 보상금 지급 관리
+// // 4. 요청 수락 버튼을 누르면 보상금 지급 및 영상 정보를 accident 테이블에 추가
+// function processRequestButton(accidentData, helperData) {
+//   //가나슈 지갑 연결 - 보상금 지급 관리
   
-  //보상금 지급 되면 db반영
-    db.updateReward(accidentData); // 보상금 지급 여부 db반영
-    db.saveAccidentVideo(accidentData, helperData); // 목격자가 준 정보를 accident 테이블에 추가
+//   //보상금 지급 되면 db반영
+//     db.updateReward(accidentData); // 보상금 지급 여부 db반영
+//     db.saveAccidentVideo(accidentData, helperData); // 목격자가 준 정보를 accident 테이블에 추가
   
-}
+// }
 
 module.exports = {
   requestVideosBasedOnLocation,

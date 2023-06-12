@@ -52,6 +52,8 @@ async function uploadVideo(req, res) {
     //DB에 ID,시간,장소,동영상url업로드
     //ID,시간,url 은 여기서 처리하는데 장소 값은 유저가 지도에서 핀 꽂으면 거기 위경도 값을 받아와야함
 
+    
+
 
 
 
