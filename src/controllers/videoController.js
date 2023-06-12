@@ -7,41 +7,28 @@ const { generateHash } = require('../utils/generateHash');
 const blockchainService = require('../services/blockchainService');
 const cloudService = require('../services/cloudService');
 const {v4:uuidv4}=require('uuid');
-const bucketName = 'YOUR_BUCKET_NAME';
-
-
+const bucketName = 'rlp-buck';
 //영상 파일의 메타데이터를 추출 (미완)
-const exiftool = require('exiftool-vendored').exiftool;
-
-async function extractMetadata(videoFilePath) {
-  try {
-    const metadata = await exiftool.read(videoFilePath);
-    // 메타데이터에서 위치정보와 시간정보 추출
-    const latitude = metadata.GPSLatitude;
-    const longitude = metadata.GPSLongitude;
-    const timestamp = metadata.DateTimeOriginal;
-    
-    console.log('Latitude:', latitude);
-    console.log('Longitude:', longitude);
-    console.log('Timestamp:', timestamp);
-  } catch (error) {
-    console.error('Failed to extract metadata:', error);
-  }
-}
-
-// 사용 예시
-const videoFilePath = '/path/to/video.mp4';
-extractMetadata(videoFilePath);
-
-//->이 정보를 DB에 저장하고 이거 기반으로 조회하게 할 수도 있겠다
-
-
+const { exec } = require('child_process');
 
 // 동영상 업로드 API 핸들러
 async function uploadVideo(req, res) {
   try {
     // 클라이언트로부터 동영상 파일 받기
     const videoFile = req.file;
+
+    exec(`ffprobe -v quiet -print_format json -show_format -show_streams ${videoFile}`, (err, stdout, stderr) => {
+      if (err) {
+        console.error('Failed to probe video:', err);
+        return;
+      }
+
+      const metadata = JSON.parse(stdout);
+      //console.log('Video metadata:', metadata);
+      const timestamp = metadata.format.tags?.creation_time;
+      console.log(timestamp);
+      });
+
 
     // 동영상 파일로부터 해시값 생성
     const videoHash = generateHash(videoFile.path);
@@ -51,8 +38,7 @@ async function uploadVideo(req, res) {
 
     // 블록체인에 동영상 해시값 저장
     // 아이디,해시 저장
-    const transactionID=await blockchainService.storeVideoHash(videoID);
-    const transactionHash = await blockchainService.storeVideoHash(videoHash);
+    await blockchainService.storeVideoHash(videoID,videoHash);
 
     // 클라우드에 동영상 파일 업로드
     await cloudService.uploadVideo(bucketName,videoID, videoFile)
@@ -62,6 +48,11 @@ async function uploadVideo(req, res) {
     .catch(err => {
       console.error('Error uploading video:', err);
     });
+
+    //DB에 ID,시간,장소,동영상url업로드
+    //ID,시간,url 은 여기서 처리하는데 장소 값은 유저가 지도에서 핀 꽂으면 거기 위경도 값을 받아와야함
+
+
 
 
     // 응답 데이터 생성
@@ -81,7 +72,7 @@ async function uploadVideo(req, res) {
   }
 }
 
-// 동영상 재생 요청 API 핸들러
+// 동영상 재생 요청 API url주기
 async function playVideo(req, res) {
   try {
     // 클라이언트로부터 동영상 파일 ID 받기
@@ -89,29 +80,16 @@ async function playVideo(req, res) {
 
     //videoID로 원본 영상 찾기
 
-    const originVideo=await databaseService.getVideoURLByID(videoID);
+    const originVideoURL=await databaseService.getVideoURLByID(videoID);
 
-    // 응답 데이터 생성 - 원본 영상 url
-    const response = {
-      originVideo
-    };
-    app.get('/video/:id', async (req, res) => {
-      const { id } = req.params;
-    
-      try {
-        // 해당 id를 기반으로 영상 파일을 가져온다.
-        const videoPath = await getVideoPath(id);
-    
-        // 영상 파일을 스트리밍 방식으로 클라이언트로 전송한다.
-        res.sendFile(videoPath);
-      } catch (error) {
-        res.status(500).json({ error: 'Failed to play video.' });
-      }
-    });
-    
-
-    // 클라이언트에 응답 전송
-    res.status(200).json(response);
+      // 무결성 확인되면 동영상 파일 반환, 그렇지 않으면 에러 메시지 발생
+    if (isValid) {
+      // 응답 데이터 생성 - 원본 영상 url
+      send2client.sendURL(originVideoURL);
+      //res.status(200).json(originVideoURL);
+   } else {
+     throw new Error('무결성 검증에 실패했습니다.');
+   }
   } catch (error) {
     console.error('동영상 재생 요청 실패:', error);
     res.status(500).json({ message: '동영상 재생 요청에 실패했습니다.' });
@@ -122,7 +100,7 @@ async function playVideo(req, res) {
 // 동영상 다운로드 요청 API 핸들러
 async function downloadVideo(req, res) {
   try {
-    // 클라이언트로부터 동영상 파일 받기
+    // 클라이언트로부터 동영상 아이디 받기
     const videoID = req.vid;
 
     // 블록체인에서 해당 동영상의 해시값 조회
@@ -142,7 +120,7 @@ async function downloadVideo(req, res) {
     }
   } catch (error) {
     console.error('동영상 다운로드 요청 실패:', error);
-    send2client.sendError(res, '동영상 다운로드 요청에 실패했습니다.');
+    res.status(500).json(res, '동영상 다운로드 요청에 실패했습니다.');
   }
 }
 

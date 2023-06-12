@@ -4,7 +4,7 @@
 
 const Web3 = require('web3');
 const HDWalletProvider = require('truffle-hdwallet-provider');
-const contractAbi = require('/Users/parkchaewon/lecture_eth/lottery-smart-contract/build/contracts/videoInfo.json').abi;
+const contractAbi = require('lecture_eth/lottery-smart-contract/build/contracts/videoInfo.json').abi;
 
 // 가나슈 네트워크 정보
 const networkId = 1337;
@@ -40,3 +40,10 @@ module.exports = {
   storeVideoHash,
   getVideoHash
 };
+
+
+
+//토큰 지급됨 (사고 당사자 to 영상제공자 토큰 이동)
+
+//-> by 스마트 컨트랙트로 구현
+//요청할때 스마트 컨트랙트에 보상금 + 영상 제공 동의서도 주고 , 주변 차량의 영상이 업로드되면 바로 보상금 지급

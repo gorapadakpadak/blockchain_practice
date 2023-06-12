@@ -6,9 +6,9 @@ const mysql = require('mysql2');
 const connection = mysql.createConnection({
   host: 'localhost',
   port:'port num',
-  user: 'your_username',
+  user: 'user_name',
   password: 'your_password',
-  database: 'your_database',
+  database: 'db_namee',
 });
 
 // 데이터베이스 연결
@@ -45,6 +45,44 @@ async function getVideoURLByID(videoID) {
 //     throw error;
 //   }
 // }
+
+// 위치 정보 기준으로 사고 당사자 조회 메소드 (videoHelperScript.js 1)
+async function getAccidentData(location){
+
+  //있다 -> accident data 제공
+
+  //없다 -> 없다 리턴
+}
+
+//위치 정보 기준으로 헬퍼 영상 조회 메소드
+async function getHelperData(location){
+  //있다 -> helper data 제공
+  //      안드에서 helper data 중 첨엔 url만 쓰고 선택된애들한테만 요청 알림 보냄
+  //      나중에 요청 수락하면 헬퍼 데이터 사고 데이터로 올리기
+
+  //없다 -> 없다 리턴
+}
+
+//accident 테이블에 accident 정보 저장
+async function saveAccidentData(accidentdata){
+
+
+}
+
+//helper 테이블에 helper정보 저장
+async function saveHelpData(helpData){
+
+}
+
+//유저 정보 저장
+async function saveUserData(userData){
+
+}
+
+//유저 정보 조회
+async function getUserData(userData){
+
+}
 
 module.exports = {
   getVideoURLByID,
