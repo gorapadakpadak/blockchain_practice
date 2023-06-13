@@ -116,6 +116,35 @@ async function getWitnessData(wPlace) {
   }
 }
 
+async function saveRequestData(requestData) {
+  try {
+    const { request_no, acc_no, au_id, req_time, accepted } = requestData;
+
+    const query = 'INSERT INTO request (request_no, acc_no, au_id, req_time, accepted) VALUES (?, ?, ?, ?, ?)';
+    const params = [request_no, acc_no, au_id, req_time, accepted];
+
+    await connection.query(query, params);
+    console.log('Request data saved successfully.');
+
+    return true;
+  } catch (error) {
+    console.error('Error saving request data:', error);
+    throw error;
+  }
+}
+
+async function getRequestData() {
+  try {
+    const query = 'SELECT * FROM request';
+    const result = await connection.query(query);
+
+    return result;
+  } catch (error) {
+    console.error('Error retrieving request data:', error);
+    throw error;
+  }
+}
+
 //유저 정보 저장
 async function saveUserData(userData){
   try {
@@ -157,6 +186,8 @@ module.exports = {
   getVideoIDByUrl,
   saveWitnessData,
   getWitnessData,
+  saveRequestData,
+  getRequestData,
   saveUserData,
   getUserData,
 };
