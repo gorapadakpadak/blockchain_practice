@@ -147,8 +147,8 @@ async function getRequestData() {
   }
 }
 
-//accidentRequest 데이터 저장
-async function saveAccidentRequestData(accidentData) {
+//accidentReport  데이터 저장
+async function saveAccidentReportData(accidentData) {
   try {
     const { acc_no, au_id, acc_vid, acc_url, acc_place, acc_title, acc_description, acc_time } = accidentData;
 
@@ -165,8 +165,8 @@ async function saveAccidentRequestData(accidentData) {
   }
 }
 
-//accidentRequest 데이터 조회
-async function getAccidentRequestData(accNo) {
+//accidentReport  데이터 조회
+async function getAccidentReportData(accNo) {
   try {
     const query = 'SELECT * FROM accidentReport WHERE acc_no = ?';
     const params = [accNo];
@@ -225,8 +225,8 @@ module.exports = {
   getWitnessData,
   saveRequestData,
   getRequestData,
-  saveAccidentRequestData,
-  getAccidentRequestData,
+  saveAccidentReportData,
+  getAccidentReportData,
   saveUserData,
   getUserData,
 };
