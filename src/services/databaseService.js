@@ -116,6 +116,7 @@ async function getWitnessData(wPlace) {
   }
 }
 
+// Request 데이터 저장
 async function saveRequestData(requestData) {
   try {
     const { request_no, acc_no, au_id, req_time, accepted } = requestData;
@@ -133,6 +134,7 @@ async function saveRequestData(requestData) {
   }
 }
 
+// Request 데이터 조회
 async function getRequestData() {
   try {
     const query = 'SELECT * FROM request';
@@ -144,6 +146,41 @@ async function getRequestData() {
     throw error;
   }
 }
+
+//accidentRequest 데이터 저장
+async function saveAccidentRequestData(accidentData) {
+  try {
+    const { acc_no, au_id, acc_vid, acc_url, acc_place, acc_title, acc_description, acc_time } = accidentData;
+
+    const query = 'INSERT INTO accidentReport (acc_no, au_id, acc_vid, acc_url, acc_place, acc_title, acc_description, acc_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
+    const params = [acc_no, au_id, acc_vid, acc_url, acc_place, acc_title, acc_description, acc_time];
+
+    await connection.query(query, params);
+    console.log('Accident data saved successfully.');
+
+    return true;
+  } catch (error) {
+    console.error('Error saving accident data:', error);
+    throw error;
+  }
+}
+
+//accidentRequest 데이터 조회
+async function getAccidentRequestData(accNo) {
+  try {
+    const query = 'SELECT * FROM accidentReport WHERE acc_no = ?';
+    const params = [accNo];
+
+    const result = await connection.query(query, params);
+    const accidentData = result[0];
+
+    return accidentData;
+  } catch (error) {
+    console.error('Error retrieving accident data:', error);
+    throw error;
+  }
+}
+
 
 //유저 정보 저장
 async function saveUserData(userData){
@@ -188,6 +225,8 @@ module.exports = {
   getWitnessData,
   saveRequestData,
   getRequestData,
+  saveAccidentRequestData,
+  getAccidentRequestData,
   saveUserData,
   getUserData,
 };
