@@ -4,11 +4,11 @@ const mysql = require('mysql2');
 
 // 마리아DB 연결 설정
 const connection = mysql.createConnection({
-  host: 'localhost',
-  port:'port num',
-  user: 'user_name',
-  password: 'your_password',
-  database: 'db_namee',
+  host: '3.82.242.31',
+  port:'3306',
+  user: 'adminMaria',
+  password: 'notpwd',
+  database: 'rlpdb',
 });
 
 // 데이터베이스 연결
@@ -20,7 +20,8 @@ connection.connect((err) => {
   }
 });
 
-const database = require('path/to/database');
+//불필요: mysql2의 createConnection로 이미 데이터베이스 연결 설정한 connection객체 사용
+//const database = require('path/to/database');
 
 // 영상 ID로 URL 조회
 async function getVideoURLByID(videoID) {
