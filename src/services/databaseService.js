@@ -85,7 +85,21 @@ async function saveVictimVideo(videoeID,videoURL){
 
 //유저 정보 저장
 async function saveUserData(userData){
+  try {
+    const { u_id, u_pwd, u_phone, u_alias, u_email } = userData;
 
+    const query = 'INSERT INTO user (u_id, u_pwd, u_phone, u_alias, u_email) VALUES (?, ?, ?, ?, ?)';
+    const params = [u_id, u_pwd, u_phone, u_alias, u_email];
+
+    //쿼리 실행 완료될 때가지 대기
+    await connection.query(query, params);
+    console.log('User data saved successfully.');
+
+    return true;
+  } catch (error) {
+    console.error('Error saving user data:', error);
+    throw error;
+  }
 }
 
 //유저 정보 조회
@@ -94,6 +108,7 @@ async function getUserData(userData){
 }
 
 module.exports = {
+  saveUserData,
   getVideoURLByID,
   getVideoIDByUrl,
 };
