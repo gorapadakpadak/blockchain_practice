@@ -83,6 +83,39 @@ async function saveVictimVideo(videoeID,videoURL){
   
 }
 
+// Witness 데이터 저장
+async function saveWitnessData(witnessData) {
+  try {
+    const { wv_id, wu_id, wv_url, w_place, upload_uid, w_time } = witnessData;
+
+    const query = 'INSERT INTO witness (wv_id, wu_id, wv_url, w_place, upload_uid, w_time) VALUES (?, ?, ?, ?, ?, ?)';
+    const params = [wv_id, wu_id, wv_url, w_place, upload_uid, w_time];
+
+    await connection.query(query, params);
+    console.log('Witness data saved successfully.');
+
+    return true;
+  } catch (error) {
+    console.error('Error saving witness data:', error);
+    throw error;
+  }
+}
+
+// Witness 데이터 조회
+async function getWitnessData(wPlace) {
+  try {
+    //w_place로 조회
+    const query = 'SELECT * FROM witness WHERE w_place = ?';
+    const result = await connection.query(query, [wPlace]);
+
+    // 조회 결과 반환
+    return result;
+  } catch (error) {
+    console.error('Error getting witness data:', error);
+    throw error;
+  }
+}
+
 //유저 정보 저장
 async function saveUserData(userData){
   try {
@@ -122,6 +155,8 @@ async function getUserData(userData){
 module.exports = { 
   getVideoURLByID,
   getVideoIDByUrl,
+  saveWitnessData,
+  getWitnessData,
   saveUserData,
   getUserData,
 };
