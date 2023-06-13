@@ -5,7 +5,7 @@ const mysql = require('mysql2');
 // 마리아DB 연결 설정
 const connection = mysql.createConnection({
   host: '3.82.242.31',
-  port:'3306',
+  port: '3306',
   user: 'adminMaria',
   password: 'notpwd',
   database: 'rlpdb',
@@ -48,7 +48,7 @@ async function getVideoURLByID(videoID) {
 // }
 
 // 위치 정보 기준으로 사고 당사자 조회 메소드 (videoHelperScript.js 1)
-async function getAccidentData(data){
+async function getAccidentData(data) {
 
   //있다 -> accident data 제공
 
@@ -56,7 +56,7 @@ async function getAccidentData(data){
 }
 
 //위치 정보 기준으로 헬퍼 영상 조회 메소드 (videoRequest.Script.js 1)
-async function getHelperData(data){ 
+async function getHelperData(data) {
   //있다 -> helper data 제공
   //      안드에서 helper data 중 첨엔 url만 쓰고 선택된애들한테만 요청 알림 보냄
   //      나중에 요청 수락하면 헬퍼 데이터 사고 데이터로 올리기
@@ -65,22 +65,22 @@ async function getHelperData(data){
 }
 
 //accident 테이블에 accident 정보 저장
-async function saveAccidentData(accidentdata){
+async function saveAccidentData(accidentdata) {
 
 }
 
 //helper 테이블에 helper정보 저장
-async function saveHelpData(helpData){
+async function saveHelpData(helpData) {
 
 }
 
 //목격자 video 저장
-async function saveHelperVideo(videoeID,videoURL){
+async function saveHelperVideo(videoeID, videoURL) {
 
 }
 //사고당사자 video 저장
-async function saveVictimVideo(videoeID,videoURL){
-  
+async function saveVictimVideo(videoeID, videoURL) {
+
 }
 
 // Witness 데이터 저장
@@ -181,9 +181,39 @@ async function getAccidentReportData(accNo) {
   }
 }
 
+//accidentWitness 데이터 저장
+async function saveAccidentWitnessData(wv_id, wu_id, acc_no, au_id) {
+  try {
+    const query = 'INSERT INTO accidentWitness (wv_id, wu_id, acc_no, au_id) VALUES (?, ?, ?, ?)';
+    const params = [wv_id, wu_id, acc_no, au_id];
+    await connection.query(query, params);
+    console.log('Accident witness data saved successfully.');
+
+    return true;
+  } catch (error) {
+    console.error('Error saving accident witness data:', error);
+    throw error;
+  }
+}
+
+//accidentWitness 데이터 조회
+async function getAccidentWitnessData(acc_no) {
+  try {
+    const query = 'SELECT wv_id, wu_id, acc_no, au_id FROM accidentWitness WHERE acc_no = ?';
+    const params = [acc_no];
+    const result = await connection.query(query, params);
+    console.log('Accident witness data retrieved successfully.');
+
+    return result;
+  } catch (error) {
+    console.error('Error retrieving accident witness data:', error);
+    throw error;
+  }
+}
+
 
 //유저 정보 저장
-async function saveUserData(userData){
+async function saveUserData(userData) {
   try {
     const { u_id, u_pwd, u_phone, u_alias, u_email } = userData;
 
@@ -202,7 +232,7 @@ async function saveUserData(userData){
 }
 
 //유저 정보 조회
-async function getUserData(userData){
+async function getUserData(userData) {
   try {
     const { u_id } = userData;
 
@@ -218,7 +248,7 @@ async function getUserData(userData){
   }
 }
 
-module.exports = { 
+module.exports = {
   getVideoURLByID,
   getVideoIDByUrl,
   saveWitnessData,
@@ -227,6 +257,8 @@ module.exports = {
   getRequestData,
   saveAccidentReportData,
   getAccidentReportData,
+  saveAccidentWitnessData,
+  getAccidentWitnessData,
   saveUserData,
   getUserData,
 };
