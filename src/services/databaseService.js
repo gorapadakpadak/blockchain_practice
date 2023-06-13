@@ -104,11 +104,24 @@ async function saveUserData(userData){
 
 //유저 정보 조회
 async function getUserData(userData){
+  try {
+    const { u_id } = userData;
 
+    const query = 'SELECT * FROM user WHERE u_id = ?';
+    const params = [u_id];
+
+    const [userData] = await connection.query(query, params);
+
+    return userData;
+  } catch (error) {
+    console.error('Error retrieving user data:', error);
+    throw error;
+  }
 }
 
-module.exports = {
-  saveUserData,
+module.exports = { 
   getVideoURLByID,
   getVideoIDByUrl,
+  saveUserData,
+  getUserData,
 };
