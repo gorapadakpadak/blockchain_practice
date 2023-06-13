@@ -231,6 +231,37 @@ async function saveUserData(userData) {
   }
 }
 
+// accidentHistoryData 데이터 저장
+async function saveAccidentHistoryData(historyData) {
+  try {
+    const { history_id, wv_id, wu_id, acc_no, au_id, status } = historyData;
+
+    const query = 'INSERT INTO accidentHistory (history_id, wv_id, wu_id, acc_no, au_id, status) VALUES (?, ?, ?, ?, ?, ?)';
+    const params = [history_id, wv_id, wu_id, acc_no, au_id, status];
+
+    await connection.query(query, params);
+    console.log('Accident history data saved successfully.');
+
+    return true;
+  } catch (error) {
+    console.error('Error saving accident history data:', error);
+    throw error;
+  }
+}
+
+// accidentHistoryData 데이터 조회
+async function getAccidentHistoryData(historyId) {
+  try {
+    const query = 'SELECT * FROM accidentHistory WHERE history_id = ?';
+    const result = await connection.query(query, [historyId]);
+
+    return result;
+  } catch (error) {
+    console.error('Error getting accident history data:', error);
+    throw error;
+  }
+}
+
 //유저 정보 조회
 async function getUserData(userData) {
   try {
@@ -259,6 +290,8 @@ module.exports = {
   getAccidentReportData,
   saveAccidentWitnessData,
   getAccidentWitnessData,
+  saveAccidentHistoryData,
+  getAccidentHistoryData,
   saveUserData,
   getUserData,
 };
