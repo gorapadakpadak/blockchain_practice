@@ -23,7 +23,7 @@ connection.connect((err) => {
 //불필요: mysql2의 createConnection로 이미 데이터베이스 연결 설정한 connection객체 사용
 //const database = require('path/to/database');
 
-// 영상 ID로 URL 조회
+/* // 영상 ID로 URL 조회
 async function getVideoURLByID(videoID) {
   try {
     // DB에서 영상 ID에 해당하는 URL 조회 로직 작성
@@ -34,7 +34,7 @@ async function getVideoURLByID(videoID) {
     throw error;
   }
 }
-
+ */
 // // URL로 영상 ID 조회
 // async function getVideoIDByUrl(videoURL) {
 //   try {
@@ -280,8 +280,8 @@ async function getUserData(userData) {
 }
 
 module.exports = {
-  getVideoURLByID,
-  getVideoIDByUrl,
+/*   getVideoURLByID,
+  getVideoIDByUrl, */
   saveWitnessData,
   getWitnessData,
   saveRequestData,
