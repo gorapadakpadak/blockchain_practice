@@ -4,12 +4,12 @@ const app = express();
 
 const videoController = require('./controllers/videoController');
 const maria=require('./services/databaseService')
-maria.connect();
+maria.connection.connect();
 app.use(express.json());
 
 // 동영상 업로드 및 비교를 위한 라우트 핸들러 등록
 app.post('/upload', videoController.uploadVideo);
-app.post('/compare', videoController.compareVideo);
+//app.post('/compare', videoController.compareVideo);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
