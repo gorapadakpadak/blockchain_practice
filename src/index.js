@@ -3,13 +3,18 @@ const express = require('express');
 const app = express();
 
 const videoController = require('./controllers/videoController');
-const maria=require('./services/databaseService')
-maria.connection.connect();
+const userController = require('./controllers/userController');
+
+const databaseService=require('./services/databaseService')
+databaseService.connection.connect();
 app.use(express.json());
 
 // 동영상 업로드 및 비교를 위한 라우트 핸들러 등록
 app.post('/upload', videoController.uploadVideo);
 //app.post('/compare', videoController.compareVideo);
+
+// 로그인을 위한 라우트 핸들러 등록
+app.post('/login', userController.login);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

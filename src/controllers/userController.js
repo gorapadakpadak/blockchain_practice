@@ -1,6 +1,34 @@
-const databaseService = require('..services/databaseService');
+const databaseService = require('../services/databaseService');
 
-// 유저 정보 저장
+// 유저 로그인 핸들러
+const login = (req, res) => {
+  const { username, password } = req.body;
+
+  // MariaDB에서 사용자 정보를 조회하는 쿼리 실행
+  const query = `SELECT * FROM user WHERE username = ? AND password = ?`;
+  databaseService.connection.query(query, [username, password], (err, results) => {
+    if (err) {
+      console.error('Error executing query:', err);
+      res.status(500).json({ error: 'Internal server error' });
+      return;
+    }
+
+    // 결과가 있는 경우 유저 정보 반환
+    if (results.length > 0) {
+      const user = results[0];
+      res.status(200).json({ user });
+    } else {
+      // 결과가 없는 경우 로그인 실패 응답
+      res.status(401).json({ error: 'Invalid credentials' });
+    }
+  });
+};
+
+module.exports = {
+  login,
+};
+
+/* // 유저 정보 저장
 async function saveUser(req, res) {
   try {
     const { u_id, u_pwd, u_phone, u_alias, u_email } = req.body;
@@ -51,3 +79,4 @@ module.exports = {
   saveUser,
   login,
 };
+ */
