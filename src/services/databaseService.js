@@ -282,6 +282,7 @@ async function getUserData(userData) {
 module.exports = {
 /*   getVideoURLByID,
   getVideoIDByUrl, */
+  connection,
   saveWitnessData,
   getWitnessData,
   saveRequestData,
