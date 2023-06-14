@@ -4,7 +4,7 @@
 
 //cloud연동 코드
 //DB연동 코드
-const db=require('src/services/databaseService.js');
+const db=require('./databaseService.js');
 
 // AWS SDK 로드
 const AWS = require('aws-sdk');
