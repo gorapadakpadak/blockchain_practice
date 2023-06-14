@@ -4,7 +4,7 @@
 
 const Web3 = require('web3');
 const HDWalletProvider = require('truffle-hdwallet-provider');
-const contractAbi = require('lecture_eth/lottery-smart-contract/build/contracts/videoInfo.json').abi;
+//const contractAbi = require('lecture_eth/lottery-smart-contract/build/contracts/videoInfo.json').abi;
 
 // 가나슈 네트워크 정보
 const networkId = 1337;
@@ -19,7 +19,7 @@ const web3 = new Web3(provider);
 
 // 스마트 컨트랙트 정보
 const contractAddress = '0xcc27037943C6BD197b872493C6D39c4D8706F97c';
-const contract = new web3.eth.Contract(contractAbi, contractAddress);
+//const contract = new web3.eth.Contract(contractAbi, contractAddress);
 
 // 동영상 해시값을 블록체인에 저장하는 함수
 async function storeVideoHash(videoID,videoHash) {
