@@ -4,7 +4,7 @@ const mysql = require('mysql2');
 
 // 마리아DB 연결 설정
 const connection = mysql.createConnection({
-  host: '3.82.242.31',
+  host: '44.202.120.253',
   port: '3306',
   user: 'adminMaria',
   password: 'notpwd',
