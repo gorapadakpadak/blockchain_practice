@@ -99,7 +99,7 @@ app.post('/saveWitnessData', (req, res) => {
     res.status(500).json({ error: 'Failed to save witness data.' });
   }
 });
-//7. 요청 수락 -> 목격자 테이블을 accWit에 
+//7. 요청 수락 -> 목격자 테이블을 accWit에
 app.post('/accept', (req, res) => {
   const isAccept=req.body.accept;
   const wv_id=req.body.wv_id;
@@ -111,13 +111,27 @@ app.post('/accept', (req, res) => {
   if(isAccept===1){
     databaseService.updateAccepted(request_no,isAccept);
     databaseService.saveAccidentWitnessData(wv_id,wu_id,acc_no,au_id);
+  }else{
+
   }
 
 });
 
 //8. 도와준 이력 -> 목격자 테이블에 유저아이디 조회해서 데이터 출력
 app.post('/witness-his', (req, res) => {
-  
+  const wu_id=req.body.wu_id;
+  const helpHistory=databaseService.getHelpHistory(wu_id);
+  const responseData=witnesses.map((row)=>{
+    return {
+      wVideoID:row.wv_id,
+      wUserID:row.wu_id,
+      wVideoURL:row.wv_url,
+      wLocation:row.w_place,
+      wTime:row.w_time,
+    };
+  });
+  res.json(responseData);
+  res.status(200).json({ message: 'searching help data successfully.'});
 
 });
 
