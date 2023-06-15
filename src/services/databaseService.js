@@ -66,8 +66,8 @@ async function saveWitnessData(witnessData) {
   }
 }
 
-// Witness 데이터 조회
-async function getWitnessData(wPlace) {
+// Witness 데이터 조회 by 장소
+async function getWitnessDatabyPlace(wPlace) {
   try {
     //w_place로 조회
     const query = 'SELECT * FROM witness WHERE w_place = ?';
@@ -80,6 +80,22 @@ async function getWitnessData(wPlace) {
     throw error;
   }
 }
+
+//Witness 데이터 조회 by ID
+async function getWitnessDatabyID(wID){
+  try {
+    //w_id로 조회
+    const query = 'SELECT * FROM witness WHERE w_id = ?';
+    const result = await connection.query(query, [wID]);
+
+    // 조회 결과 반환
+    return result;
+  } catch (error) {
+    console.error('Error getting witness data:', error);
+    throw error;
+  }
+}
+
 
 // Request 데이터 저장
 async function saveRequestData(requestData) {
@@ -260,7 +276,7 @@ module.exports = {
   getVideoIDByUrl, */
   connection,
   saveWitnessData,
-  getWitnessData,
+  getWitnessDatabyPlace,
   saveRequestData,
   getRequestData,
   saveAccidentReportData,
@@ -271,6 +287,7 @@ module.exports = {
   getAccidentHistoryData,
   updateStatus,
   updateAccepted,
+  getWitnessDatabyID,
   getHelpHistory,
   saveUserData,
   getUserData,

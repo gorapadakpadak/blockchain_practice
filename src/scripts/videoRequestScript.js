@@ -19,7 +19,7 @@ const cloud=require('src/services/cloudService.js');
 
 // 1.  위치 정보 기준으로 helper 테이블 조회하여 주변 차량 v_id, v_url 제공 (마커 찍을때 필요)
 function requestVideosBasedOnLocation(location) {
-  const witnesses = db.getWitnessData(location);
+  const witnesses = db.getWitnessDatabyPlace(location);
   //걍 다 보내자..
   const responseData=witnesses.map((row)=>{
     return {
@@ -54,7 +54,15 @@ function saveAccidentReport(accidentData, videoFile) {
 
 }
 function alarmToWitness(selectedWitnessList){
-    db.saveRequestData()
+    // 선택된 목격자들에게 알림 보내기
+  selectedWitnessList.forEach((wu_id) => {
+    // wu_id를 사용하여 해당 목격자의 정보를 가져오는 함수 호출
+    const acceptWitnessData = getWitnessDatabyID(wu_id);
+    // 알림 데이터를 저장하거나 전송하는 함수 호출
+    db.saveRequestData(acceptWitnessData);
+    // 알림을 보내는 또 다른 함수 호출
+    //sendNotificationToUser(wu_id);
+  });
 
 }
 
