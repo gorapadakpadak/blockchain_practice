@@ -66,20 +66,32 @@ async function saveWitnessData(witnessData) {
   }
 }
 
-// Witness 데이터 조회 by 장소
-async function getWitnessDatabyPlace(wPlace) {
+async function getWitnessData() {
   try {
-    //w_place로 조회
-    const query = 'SELECT * FROM witness WHERE w_place = ?';
-    const result = await connection.query(query, [wPlace]);
-
-    // 조회 결과 반환
-    return result;
+    const query = 'SELECT * FROM witness';
+    const result = await connection.query(query);
+    const witnessData = result.rows;
+    return witnessData;
   } catch (error) {
-    console.error('Error getting witness data:', error);
+    console.error('Failed to get witness data:', error);
     throw error;
   }
 }
+
+// // Witness 데이터 조회 by 장소
+// async function getWitnessDatabyPlace(wPlace) {
+//   try {
+//     //w_place로 조회
+//     const query = 'SELECT * FROM witness WHERE w_place = ?';
+//     const result = await connection.query(query, [wPlace]);
+
+//     // 조회 결과 반환
+//     return result;
+//   } catch (error) {
+//     console.error('Error getting witness data:', error);
+//     throw error;
+//   }
+// }
 
 //Witness 데이터 조회 by ID
 async function getWitnessDatabyID(wID){
@@ -100,10 +112,10 @@ async function getWitnessDatabyID(wID){
 // Request 데이터 저장
 async function saveRequestData(requestData) {
   try {
-    const { request_no, acc_no, au_id, req_time, accepted } = requestData;
+    const { acc_no, au_id, req_time, accepted } = requestData;
 
-    const query = 'INSERT INTO request (request_no, acc_no, au_id, req_time, accepted) VALUES (?, ?, ?, ?, ?)';
-    const params = [request_no, acc_no, au_id, req_time, accepted];
+    const query = 'INSERT INTO request ( acc_no, au_id, req_time, accepted) VALUES ( ?, ?, ?, ?)';
+    const params = [ acc_no, au_id, req_time, accepted];
 
     await connection.query(query, params);
     console.log('Request data saved successfully.');
@@ -131,10 +143,10 @@ async function getRequestData() {
 //accidentReport  데이터 저장
 async function saveAccidentReportData(accidentData) {
   try {
-    const { acc_no, au_id, acc_vid, acc_url, acc_place, acc_title, acc_description, acc_time } = accidentData;
+    const {  au_id, acc_vid, acc_url, acc_place, acc_title, acc_description, acc_time } = accidentData;
 
-    const query = 'INSERT INTO accidentReport (acc_no, au_id, acc_vid, acc_url, acc_place, acc_title, acc_description, acc_time) VALUES (?, ?, ?, ?, ?, ?, ?, ?)';
-    const params = [acc_no, au_id, acc_vid, acc_url, acc_place, acc_title, acc_description, acc_time];
+    const query = 'INSERT INTO accidentReport ( au_id, acc_vid, acc_url, acc_place, acc_title, acc_description, acc_time) VALUES ( ?, ?, ?, ?, ?, ?, ?)';
+    const params = [ au_id, acc_vid, acc_url, acc_place, acc_title, acc_description, acc_time];
 
     await connection.query(query, params);
     console.log('Accident data saved successfully.');
@@ -215,10 +227,10 @@ async function saveUserData(userData) {
 // accidentHistoryData 데이터 저장
 async function saveAccidentHistoryData(historyData) {
   try {
-    const { history_id, wv_id, wu_id, acc_no, au_id, status } = historyData;
+    const {  wv_id, wu_id, acc_no, au_id, status } = historyData;
 
-    const query = 'INSERT INTO accidentHistory (history_id, wv_id, wu_id, acc_no, au_id, status) VALUES (?, ?, ?, ?, ?, ?)';
-    const params = [history_id, wv_id, wu_id, acc_no, au_id, status];
+    const query = 'INSERT INTO accidentHistory ( wv_id, wu_id, acc_no, au_id, status) VALUES ( ?, ?, ?, ?, ?)';
+    const params = [ wv_id, wu_id, acc_no, au_id, status];
 
     await connection.query(query, params);
     console.log('Accident history data saved successfully.');
@@ -244,14 +256,39 @@ async function getAccidentHistoryData(historyId) {
 }
 
 async function updateStatus(historyID,statusValue){
+  try {
+    const query = 'UPDATE accidentHistory SET status = ? WHERE history_id = ?';
+    const result = await connection.query(query, [statusValue, historyID]);
 
+    return result;
+  } catch (error) {
+    console.error('Error updating status:', error);
+    throw error;
+  }
 }
 
 async function updateAccepted(request_no,acceptValue){
+  try {
+    const query = 'UPDATE request SET accepted = ? WHERE request_no = ?';
+    const result = await connection.query(query, [acceptValue, request_no]);
 
+    return result;
+  } catch (error) {
+    console.error('Error updating status:', error);
+    throw error;
+  }
 }
 
 async function getHelpHistory(witnessID){
+  try {
+    const query = 'SELECT * FROM witness WHERE wu_id = ?';
+    const result = await connection.query(query, [witnessID]);
+
+    return result;
+  } catch (error) {
+    console.error('Error getting accident history data:', error);
+    throw error;
+  }
 
 }
 //유저 정보 조회
@@ -276,7 +313,7 @@ module.exports = {
   getVideoIDByUrl, */
   connection,
   saveWitnessData,
-  getWitnessDatabyPlace,
+  getWitnessData,
   saveRequestData,
   getRequestData,
   saveAccidentReportData,

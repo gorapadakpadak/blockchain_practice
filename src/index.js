@@ -7,18 +7,31 @@ const userController = require('./controllers/userController');
 const databaseService=require('./services/databaseService');
 const videoRequestScript = require('./scripts/videoRequestScript');
 
-const getPostRouter=require(src/clients/getPost);
 databaseService.connection.connect();
 app.use(express.json());
+
+const blockchainService = require('./blockchainService');
+
+blockchainService.deployContract()
+  .then(() => {
+    blockchainService.getContractData();
+  })
+  .catch((error) => {
+    console.error('Error:', error);
+  });
+
+
 
 // 동영상재생
 app.post('/playVideo', videoController.playVideo);
 
-// 1. 사고 당사자 위치값을 받아서 사고 목격자 데이터를 보내는 라우터
+
+
+// 1. 사고 당사자가 지도 들어가자 마자 다 띄워주기
 app.post('/findWitness', async (req, res) => {
   try {
-    const location = req.body.location;
-    videoRequestScript.requestVideosBasedOnLocation(location);
+    //const location = req.body.location;
+    videoRequestScript.getWitnessData();
   } catch (error) {
     console.error('error finding witness data:', error);
     res.status(500).json({ message: 'error finding witness data.' });
@@ -77,12 +90,9 @@ app.post('/complete', (req, res) => {
 
 
 
-
 //5. 목격자 위치값 -> 사고 당사자 data (accreq조회)
 app.post('/findAccident', (req, res) => {
-  const wLocation=req.body.location;
-  findAccidentByLocation(wLocation);
-
+  findAccident();
 });
 
 //6. 도와주기 클릭 -> 목격자 data, videofile
@@ -121,7 +131,7 @@ app.post('/accept', (req, res) => {
 app.post('/witness-his', (req, res) => {
   const wu_id=req.body.wu_id;
   const helpHistory=databaseService.getHelpHistory(wu_id);
-  const responseData=witnesses.map((row)=>{
+  const responseData=helpHistory.map((row)=>{
     return {
       wVideoID:row.wv_id,
       wUserID:row.wu_id,

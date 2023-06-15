@@ -13,8 +13,8 @@ const databaseService = require('src/services/databaseService'); // 데이터베
 const videoController = require('src/controllers/videoController'); // 영상 컨트롤러 모듈 import
 
 // 1. 위치 정보 기준으로 accident 테이블 조회
-async function findAccidentByLocation(location){
-  const accidentData = databaseService.getRequestData(location); // 위치 정보를 기반으로 사고 테이블에서 데이터 조회
+async function findAccident(){
+  const accidentData = databaseService.getRequestData(); 
 
   if (accidentData) {
     const respose = {
@@ -64,7 +64,7 @@ function helpButtonClicked(helperData,videoFile) {
 
 
 module={
-  findAccidentByLocation,
+  findAccident,
   helpButtonClicked,
 
 }

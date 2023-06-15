@@ -18,8 +18,8 @@ const cloud=require('src/services/cloudService.js');
 
 
 // 1.  위치 정보 기준으로 helper 테이블 조회하여 주변 차량 v_id, v_url 제공 (마커 찍을때 필요)
-function requestVideosBasedOnLocation(location) {
-  const witnesses = db.getWitnessDatabyPlace(location);
+function requestWitnessVideos(location) {
+  const witnesses = db.getWitnessData();
   //걍 다 보내자..
   const responseData=witnesses.map((row)=>{
     return {
@@ -94,7 +94,7 @@ function alarmToWitness(selectedWitnessList){
 // }
 
 module.exports = {
-  requestVideosBasedOnLocation,
+  requestWitnessVideos,
   saveAccidentReport,
   alarmToWitness,
   notifyAccidentLocationChange,
