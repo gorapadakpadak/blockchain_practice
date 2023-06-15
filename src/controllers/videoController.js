@@ -12,7 +12,7 @@ const bucketName = 'rlp-buck';
 const { exec } = require('child_process');
 
 // 동영상 업로드 API 핸들러
-async function uploadVideo(req, res) {
+async function handleVideoUpload(req, res) {
   try {
     // 클라이언트로부터 동영상 파일 받기
     const videoFile = req.file;
@@ -127,7 +127,7 @@ async function downloadVideo(req, res) {
 }
 
 module.exports = {
-  uploadVideo,
+  handleVideoUpload,
   playVideo,
 };
 
