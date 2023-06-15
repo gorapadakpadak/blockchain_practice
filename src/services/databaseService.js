@@ -227,6 +227,13 @@ async function getAccidentHistoryData(historyId) {
   }
 }
 
+async function updateStatus(historyID,statusValue){
+
+}
+
+async function updateAccepted(request_no,acceptValue){
+
+}
 //유저 정보 조회
 async function getUserData(userData) {
   try {
@@ -258,6 +265,8 @@ module.exports = {
   getAccidentWitnessData,
   saveAccidentHistoryData,
   getAccidentHistoryData,
+  updateStatus,
+  updateAccepted,
   saveUserData,
   getUserData,
 };

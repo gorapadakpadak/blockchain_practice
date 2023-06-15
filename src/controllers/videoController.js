@@ -3,9 +3,10 @@
 //2. 생성된 해시값과 블록체인에서 조회한 해당 동영상의 해시값을 비교하여 무결성을 검증
 //3. 필요한 경우 'blockchainServer.js'와 'cloudService.js'를 호출하여 블록체인과 클라우드와의 상호작용을 수행합니다.
 
-const { generateHash } = require('../utils/generateHash');
-const blockchainService = require('../services/blockchainService');
-const cloudService = require('../services/cloudService');
+const { generateHash } = require('src/utils/generateHash');
+const blockchainService = require('src/services/blockchainService');
+const db=require('src/services/databaseService');
+const cloudService = require('src/services/cloudService');
 const {v4:uuidv4}=require('uuid');
 const bucketName = 'rlp-buck';
 //영상 파일의 메타데이터를 추출 (미완)
@@ -41,7 +42,7 @@ async function handleVideoUpload(req, res) {
     await blockchainService.storeVideoHash(videoID,videoHash);
 
     // 클라우드에 동영상 파일 업로드
-    await cloudService.uploadVideo(bucketName,videoID, videoFile)
+    const url=await cloudService.uploadVideo(bucketName,videoID, videoFile)
     .then(url => {
       console.log('Video uploaded successfully. URL:', url);
     })
@@ -51,23 +52,14 @@ async function handleVideoUpload(req, res) {
 
     //DB에 ID,시간,장소,동영상url업로드
     //ID,시간,url 은 여기서 처리하는데 장소 값은 유저가 지도에서 핀 꽂으면 거기 위경도 값을 받아와야함
-
-    
-
-
-
-
-    // 응답 데이터 생성
     const response = {
       videoID,
-      transactionID,
-      videoHash,
-      transactionHash,
+      url,
       message: '동영상이 업로드되었습니다.',
     };
 
     // 클라이언트에 응답 전송
-    res.status(200).json(response);
+    return response;
   } catch (error) {
     console.error('동영상 업로드 실패:', error);
     res.status(500).json({ message: '동영상 업로드에 실패했습니다.' });

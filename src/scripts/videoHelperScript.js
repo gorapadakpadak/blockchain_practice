@@ -13,46 +13,44 @@ const databaseService = require('src/services/databaseService'); // 데이터베
 const videoController = require('src/controllers/videoController'); // 영상 컨트롤러 모듈 import
 
 // 1. 위치 정보 기준으로 accident 테이블 조회
-const accidentData = databaseService.getRequestData(location); // 위치 정보를 기반으로 사고 테이블에서 데이터 조회
+async function findAccidentByLocation(location){
+  const accidentData = databaseService.getRequestData(location); // 위치 정보를 기반으로 사고 테이블에서 데이터 조회
 
-if (accidentData) {
-  const respose = {
-    au_id: accidentData.au_id,
-    location: accidentData.acc_place,
-    acc_no: accidentData.acc_no,
-    acc_vid: accidentData.acc_vid,
-    acc_url: accidentData.acc_url,
-    acc_title: accidentData.acc_title,
-    acc_description: accidentData.acc_description,
-    acc_time: accidentData.acc_time
-};
-
+  if (accidentData) {
+    const respose = {
+      au_id: accidentData.au_id,
+      location: accidentData.acc_place,
+      acc_no: accidentData.acc_no,
+      acc_vid: accidentData.acc_vid,
+      acc_url: accidentData.acc_url,
+      acc_title: accidentData.acc_title,
+      acc_description: accidentData.acc_description,
+      acc_time: accidentData.acc_time
+  };
   
-  res.status(200).json(respose);
-
- 
-} else {
-  // 1-3. 사고 당사자가 접수하지 않은 경우
-  // 그냥 널 값 주거나 메시지로 없다고 창 한번 띄워주기
-  res.status(200).json('해당 지역에 접수된 사고 내역이 없습니다.');
-
+    
+    res.status(200).json(respose);
+  
+   
+  } else {
+    // 1-3. 사고 당사자가 접수하지 않은 경우
+    // 그냥 널 값 주거나 메시지로 없다고 창 한번 띄워주기
+    res.status(200).json('해당 지역에 접수된 사고 내역이 없습니다.');
+  
+  }
 }
+
+
 
 // 2. 도와주기 버튼 누를 때 값 전송 및 Helper 테이블에 저장
-function helpButtonClicked(helperID, location) {
+function helpButtonClicked(helperData,videoFile) {
+
     //영상을 업로드 하고
-    videoController.handleVideoUpload(videoID)
+    videoController.handleVideoUpload(videoFile);
+    databaseService.saveWitnessData(helperData); // Helper 테이블에 도움 요청 데이터 저장
 
-    const helpData = {
-        helperID: helperID,
-        location: location,
-        timestamp: Date.now(),
+  }
 
-        
-    };
-
-    databaseService.saveWitnessData(helpData); // Helper 테이블에 도움 요청 데이터 저장
-}
 
 
 // // 4. 영상 업로드 후 요청자에게 알림 전송 해줄까 말까
@@ -65,3 +63,8 @@ function helpButtonClicked(helperID, location) {
 //   });
 
 
+module={
+  findAccidentByLocation,
+  helpButtonClicked,
+
+}

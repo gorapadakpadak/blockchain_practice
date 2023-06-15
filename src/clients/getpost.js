@@ -2,6 +2,7 @@
 //1. 위치 정보 (조회용)
 //  1-1 사고당사자가 찍은 핀 in -> 목격자 테이블에서 확인해서 있으면 목격자 테이블 모두 out
 //  1-2 목격자가 찍은 핀 in -> 사고 테이블에서 확인해서 있으면 사고 정보 out
+findAccidentByLocation(location);
 
 
 //2. 요청하기를 눌렀을때 정보들 in
@@ -25,6 +26,17 @@
 //5. 도와주기 눌렀을때 정보들 in
 //  위치정보, 유저정보
 //  영상 file
+app.post('/save-witness-data', (req, res) => {
+  const witnessData = req.body;
+  
+  videoHelperScript.helpButtonClicked(witnessData)
+    .then(() => {
+      res.status(200).send('Witness data saved successfully.');
+    })
+    .catch((error) => {
+      res.status(500).send('Error saving witness data.');
+    });
+});
 
 //6. 다운로드 요청 시 VideoController.downloadVideo
 
@@ -32,6 +44,8 @@
 
 //7. 요청 수락 버튼 눌리면 서버에 해당 목격자 정보를 전송
 //  해당 목격자 테이블을 accident table에 묶어줌
+// Witness 데이터 저장 엔드포인트
+
 
 
 

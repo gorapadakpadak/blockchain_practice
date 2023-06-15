@@ -21,23 +21,40 @@ const cloud=require('src/services/cloudService.js');
 function requestVideosBasedOnLocation(location) {
   const witnesses = db.getWitnessData(location);
   //걍 다 보내자..
-  res.json(witnesses);
+  const responseData=witnesses.map((row)=>{
+    return {
+      wVideoID:row.wv_id,
+      wUserID:row.wu_id,
+      wVideoURL:row.wv_url,
+      wLocation:row.w_place,
+      wTime:row.w_time,
+    };
+  });
+  res.json(responseData);
+  res.status(200).json({ message: 'searching Witness data successfully.'});
 }
 
 // -> 안드로이드에서 선별해서 요청보낼 u_id,v_id줌
 // -> 그럼 node.js에서 받아서 u_id,v_id로 helper table조회해서 목격자의 정보를 조회 -> 푸쉬알림
 
 // 2. 요청하기 버튼 누르면 영상 업로드 및 사고 정보 저장 -> file,사고 당사자's정보
-function handleAccidentReport(accidentData, videoData) {
+function saveAccidentReport(accidentData, videoFile) {
   // 영상을 클라우드에 업로드
-  const videoURL = videoController.handleVideoUpload(videoData,res);
+  const videoData = videoController.handleVideoUpload(videoFile,res);
+  const videoID=videoData.videoID;
+  const videoURL=videoData.videoURL;
+  accidentData.v=videoID;
 
   if(videoURL){
        // 사고 정보를 데이터베이스에 저장
-      db.saveRequestData(accidentData);
+      db.saveAccidentReportData(accidentData);
   } else {
     res.json("동영상 업로드에 실패했습니다.")
   }
+
+}
+function alarmToWitness(selectedWitnessList){
+    db.saveRequestData()
 
 }
 
@@ -70,7 +87,8 @@ function handleAccidentReport(accidentData, videoData) {
 
 module.exports = {
   requestVideosBasedOnLocation,
-  handleAccidentReport,
+  saveAccidentReport,
+  alarmToWitness,
   notifyAccidentLocationChange,
   processRequestButton,
 };
