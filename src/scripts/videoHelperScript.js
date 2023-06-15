@@ -12,27 +12,23 @@ const cloudService = require('src/services/cloudService'); // 클라우드와 �
 const databaseService = require('src/services/databaseService'); // 데이터베이스 서비스 모듈 import
 const videoController = require('src/controllers/videoController'); // 영상 컨트롤러 모듈 import
 
-//사용자로부터 받는 위치정보 넣어줘야함
-const location= ;
-
 // 1. 위치 정보 기준으로 accident 테이블 조회
-const accidentData = databaseService.getAccidentData(location); // 위치 정보를 기반으로 사고 테이블에서 데이터 조회
+const accidentData = databaseService.getRequestData(location); // 위치 정보를 기반으로 사고 테이블에서 데이터 조회
 
 if (accidentData) {
-  // 1-1. 사고 당사자가 접수한 경우
-  const victimLocation = accidentData.location; // 사고 당사자의 위치 정보
-  //위치 정보, url 보내기
+  const respose = {
+    au_id: accidentData.au_id,
+    location: accidentData.acc_place,
+    acc_no: accidentData.acc_no,
+    acc_vid: accidentData.acc_vid,
+    acc_url: accidentData.acc_url,
+    acc_title: accidentData.acc_title,
+    acc_description: accidentData.acc_description,
+    acc_time: accidentData.acc_time
+};
 
-  // 1-2. accident 테이블에서 당사자의 영상 받아와서 보여주기
-  const victimVideo = accidentData.videoURL; // 사고 당사자의 영상 데이터
   
-   // 응답 데이터 생성
-   const response = {
-    victimLocation,
-    victimVideo,
-    message: '해당 지역에 접수된 사고 내역입니다.',
-  };
-  res.status(200).json(response);
+  res.status(200).json(respose);
 
  
 } else {
@@ -45,15 +41,17 @@ if (accidentData) {
 // 2. 도와주기 버튼 누를 때 값 전송 및 Helper 테이블에 저장
 function helpButtonClicked(helperID, location) {
     //영상을 업로드 하고
-    videoController.uploadVideo(videoID)
+    videoController.handleVideoUpload(videoID)
 
     const helpData = {
         helperID: helperID,
         location: location,
         timestamp: Date.now(),
+
+        
     };
 
-    databaseService.saveHelpData(helpData); // Helper 테이블에 도움 요청 데이터 저장
+    databaseService.saveWitnessData(helpData); // Helper 테이블에 도움 요청 데이터 저장
 }
 
 

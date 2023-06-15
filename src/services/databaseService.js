@@ -47,41 +47,6 @@ async function getVideoURLByID(videoID) {
 //   }
 // }
 
-// 위치 정보 기준으로 사고 당사자 조회 메소드 (videoHelperScript.js 1)
-async function getAccidentData(data) {
-
-  //있다 -> accident data 제공
-
-  //없다 -> 없다 리턴
-}
-
-//위치 정보 기준으로 헬퍼 영상 조회 메소드 (videoRequest.Script.js 1)
-async function getHelperData(data) {
-  //있다 -> helper data 제공
-  //      안드에서 helper data 중 첨엔 url만 쓰고 선택된애들한테만 요청 알림 보냄
-  //      나중에 요청 수락하면 헬퍼 데이터 사고 데이터로 올리기
-
-  //없다 -> 없다 리턴
-}
-
-//accident 테이블에 accident 정보 저장
-async function saveAccidentData(accidentdata) {
-
-}
-
-//helper 테이블에 helper정보 저장
-async function saveHelpData(helpData) {
-
-}
-
-//목격자 video 저장
-async function saveHelperVideo(videoeID, videoURL) {
-
-}
-//사고당사자 video 저장
-async function saveVictimVideo(videoeID, videoURL) {
-
-}
 
 // Witness 데이터 저장
 async function saveWitnessData(witnessData) {

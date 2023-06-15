@@ -12,29 +12,29 @@
 
 const videoController = require('src/controllers/videoController.js');
 const db = require('src/services/databaseService.js');
-const cloude=require('src/services/cloudService.js')
+const cloud=require('src/services/cloudService.js');
 
 
 
 
 // 1.  위치 정보 기준으로 helper 테이블 조회하여 주변 차량 v_id, v_url 제공 (마커 찍을때 필요)
 function requestVideosBasedOnLocation(location) {
-  const witnesses = db.getHelperDatae(location);
-
-  res.json(witness);
+  const witnesses = db.getWitnessData(location);
+  //걍 다 보내자..
+  res.json(witnesses);
 }
 
 // -> 안드로이드에서 선별해서 요청보낼 u_id,v_id줌
 // -> 그럼 node.js에서 받아서 u_id,v_id로 helper table조회해서 목격자의 정보를 조회 -> 푸쉬알림
 
-// 2. 요청하기 버튼 누르면 영상 업로드 및 사고 정보 저장
+// 2. 요청하기 버튼 누르면 영상 업로드 및 사고 정보 저장 -> file,사고 당사자's정보
 function handleAccidentReport(accidentData, videoData) {
   // 영상을 클라우드에 업로드
-  const videoURL = videoController.uploadVideo(videoData);
+  const videoURL = videoController.handleVideoUpload(videoData,res);
 
   if(videoURL){
        // 사고 정보를 데이터베이스에 저장
-      db.saveAccidentData(accidentData);
+      db.saveRequestData(accidentData);
   } else {
     res.json("동영상 업로드에 실패했습니다.")
   }
@@ -42,19 +42,19 @@ function handleAccidentReport(accidentData, videoData) {
 }
 
 
-// 3. u_id,v_id로 helper table조회해서 목격자의 정보를 조회 & 푸쉬알림
-function alarm2Witness(alarmList){
-//목격자 정보 조회해서 알림 넣기 -> 알람리스트에서 하나씩 뽑아서 조회 -> 토큰 정보 토대로 알림
+// // 3. u_id,v_id로 helper table조회해서 목격자의 정보를 조회 & 푸쉬알림
+// function alarm2Witness(alarmList){
+// //목격자 정보 조회해서 알림 넣기 -> 알람리스트에서 하나씩 뽑아서 조회 -> 토큰 정보 토대로 알림
 
 
-// 푸시 알림 보내기 예시
-const deviceToken = 'DEVICE_TOKEN'; // 안드로이드 디바이스 토큰
-const message = '업로드하신 영상 제공 요청이 들어왔습니다';
+// // 푸시 알림 보내기 예시
+// const deviceToken = 'DEVICE_TOKEN'; // 안드로이드 디바이스 토큰
+// const message = '업로드하신 영상 제공 요청이 들어왔습니다';
 
 
 
 
-}
+// }
 
 
 
