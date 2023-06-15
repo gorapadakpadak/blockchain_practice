@@ -19,7 +19,7 @@ AWS.config.update({
 const s3 = new AWS.S3();
 
 // 영상 업로드 메소드
-function uploadVideo(bucketName, fileName, fileData) {
+function uploadVideoToCloud(bucketName, fileName, fileData) {
   const params = {
     Bucket: bucketName,
     Key: fileName,
